@@ -4,7 +4,7 @@ import graph from "../graph.json";
 const graphData = {
   nodes: graph.nodes.map((node) => ({
     id: node.title,
-    group: 10,
+    group: 15,
   })),
   links: graph.edges.map((edge) => ({
     source: edge.source,
@@ -33,9 +33,9 @@ const Graph = () => {
           ...bckgDimensions
         );
 
+        ctx.fillStyle = "blue";
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
-        ctx.fillStyle = node.color;
         ctx.fillText(label, node.x, node.y);
       }}
       linkWidth={2}
