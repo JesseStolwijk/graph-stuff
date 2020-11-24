@@ -3,6 +3,9 @@ import graph from "../graph.json";
 import Modal from "react-modal";
 import { useState } from "react";
 import ReactMarkdown from "react-markdown";
+import gfm from "remark-gfm";
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { dark } from "react-syntax-highlighter/dist/esm/styles/prism";
 
 const graphData = {
   nodes: graph.nodes.map((node) => ({
@@ -13,6 +16,14 @@ const graphData = {
     source: edge.source,
     target: edge.target,
   })),
+};
+
+const renderers = {
+  code: ({ language, value }) => {
+    return (
+      <SyntaxHighlighter style={dark} language={language} children={value} />
+    );
+  },
 };
 
 Modal.setAppElement("#root");
@@ -38,7 +49,7 @@ const Graph = () => {
         contentLabel="Example Modal"
       >
         <button onClick={closeModal}>close</button>
-        <ReactMarkdown>
+        <ReactMarkdown renderers={renderers} plugins={[gfm]}>
           {graph.nodes.find((node) => node.title === clickedNode)?.fileContents}
         </ReactMarkdown>
       </Modal>
