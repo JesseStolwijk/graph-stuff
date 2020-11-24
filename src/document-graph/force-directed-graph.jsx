@@ -21,10 +21,6 @@ const Graph = () => {
   const [modalIsOpen, setIsOpen] = useState(false);
   const [clickedNode, setClickedNode] = useState(null);
 
-  const openModal = () => {
-    setIsOpen(true);
-  };
-
   const closeModal = () => {
     setIsOpen(false);
   };
@@ -36,7 +32,6 @@ const Graph = () => {
 
   return (
     <div>
-      <button onClick={openModal}>Open Modal</button>
       <Modal
         isOpen={modalIsOpen}
         onRequestClose={closeModal}
