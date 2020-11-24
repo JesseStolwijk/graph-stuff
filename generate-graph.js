@@ -1,5 +1,6 @@
 const fs = require("fs");
 const MarkdownIt = require("markdown-it");
+const pathLib = require("path");
 
 const md = new MarkdownIt();
 
@@ -8,6 +9,7 @@ const parseFile = (url) => {
   return {
     path: url,
     contents: md.parse(fileContents, {}),
+    rawContents: fileContents,
   };
 };
 
@@ -50,15 +52,15 @@ const collectFiles = (path, accFiles = []) => {
   const files = fs.readdirSync(path);
   const folders = files.filter((file) => !file.includes("."));
   const mdFiles = files
-    .filter((file) => file.endsWith(".md"))
-    .map((file) => path + "/" + file);
+    .filter((file) => file.endsWith(".md") || file.endsWith(".mdx"))
+    .map((file) => pathLib.join(path, file));
 
   if (folders.length === 0) {
     return [...accFiles, ...mdFiles];
   }
 
   return [
-    ...folders.map((folder) => collectFiles(path + "/" + folder, [])),
+    ...folders.map((folder) => collectFiles(pathLib.join(path, folder), [])),
     ...accFiles,
     ...mdFiles,
   ];
@@ -69,8 +71,10 @@ const files = collectFiles(process.argv[2]).flat();
 const filesContents = files.map((file) => parseFile(file));
 
 const nodes = filesContents.map((page) => ({
+  filePath: page.path,
   fileId: parseHeader(page.contents).find((item) => item.key === "id").value,
   contents: page.contents,
+  rawContents: page.rawContents,
 }));
 
 const edges = nodes.flatMap((node) => {
@@ -91,6 +95,7 @@ console.log(edges);
 const nodeObjects = nodes.map((node) => ({
   id: Math.random(),
   title: node.fileId,
+  fileContents: node.rawContents,
   x: 100,
   y: 100,
   type: "empty",
